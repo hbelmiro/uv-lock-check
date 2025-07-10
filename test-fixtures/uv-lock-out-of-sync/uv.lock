@@ -1,0 +1,8 @@
+# This is a placeholder uv.lock file for the out-of-sync test
+# It should be out of sync with the pyproject.toml above
+[metadata]
+python-versions = ">=3.9"
+
+[package]
+name = "pytest"
+version = "7.4.0"  # <-- intentionally different from pyproject.toml 
