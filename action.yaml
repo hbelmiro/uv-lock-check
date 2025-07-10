@@ -17,6 +17,10 @@ inputs:
     description: 'Complete uv command to generate requirements.txt (e.g., "uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt")'
     required: false
     default: 'uv pip compile pyproject.toml -o requirements.txt'
+  run-sync:
+    description: 'Whether to run uv sync to update uv.lock and requirements.txt'
+    required: false
+    default: 'false'
 
 runs:
   using: "composite"
@@ -53,6 +57,16 @@ runs:
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+    - name: Run uv sync
+      if: inputs.run-sync == 'true'
+      shell: bash
+      working-directory: ${{ env.PYPROJECT_DIR }}
+      run: |
+        uv sync
+        if [ -f "${{ env.REQUIREMENTS_PATH }}" ]; then
+          ${{ inputs.requirements-command }}
+        fi
 
     - name: Verify files
       shell: bash

@@ -90,7 +90,7 @@ jobs:
 - name: Check Windows Requirements
   uses: hbelmiro/uv-lock-check@v1
   with:
-    requirements-command: 'uv pip compile --python-platform=win32 pyproject.toml -o requirements-win.txt'
+    requirements-command: 'uv pip compile --python-platform=windows pyproject.toml -o requirements-win.txt'
     requirements-path: 'requirements-win.txt'
 ```
 
