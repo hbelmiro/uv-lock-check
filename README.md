@@ -56,12 +56,12 @@ jobs:
 |-------|-------------|----------|---------|
 | `pyproject-path` | Path to the pyproject.toml file | No | `pyproject.toml` |
 | `requirements-path` | Path to the requirements.txt file. If empty, will look for requirements.txt in the same directory as pyproject.toml | No | `''` |
-| `requirements-command` | Complete uv command to generate requirements.txt | No | `uv pip compile pyproject.toml -o requirements.txt` |
+| `requirements-command` | Complete uv command to generate requirements.txt | No | `uv sync` |
 
 ## How It Works
 
 1. The action reads the Python version from your `pyproject.toml` file
-2. It runs `uv sync` to check if the `uv.lock` file is in sync
+2. It runs the specified command (defaults to `uv sync`) to check if the `uv.lock` file is in sync
 3. If a `requirements.txt` file is specified:
    - It generates a new requirements file using the provided command
    - Compares it with the existing one
