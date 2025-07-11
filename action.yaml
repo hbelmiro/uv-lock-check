@@ -16,7 +16,7 @@ inputs:
   requirements-command:
     description: 'Complete uv command to generate requirements.txt (e.g., "uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt")'
     required: false
-    default: 'uv pip compile pyproject.toml -o requirements.txt'
+    default: 'uv sync'
   run-sync:
     description: 'Whether to run uv sync to update uv.lock and requirements.txt'
     required: false

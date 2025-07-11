@@ -38,7 +38,42 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           uv sync
       
-      - name: Test basic usage
+      - name: Test basic usage (with default uv sync command)
+        uses: ./
+        with:
+          pyproject-path: test-project/pyproject.toml
+
+  test-default-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create test project
+        run: |
+          mkdir -p test-project
+          cat > test-project/pyproject.toml << EOF
+          [project]
+          name = "test-project"
+          version = "0.1.0"
+          requires-python = ">=3.9"
+          dependencies = [
+              "requests>=2.31.0",
+              "pytest>=7.4.0",
+          ]
+          EOF
+      
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+      
+      - name: Generate lock file
+        working-directory: test-project
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv sync
+      
+      - name: Test with default uv sync command (no requirements-command specified)
         uses: ./
         with:
           pyproject-path: test-project/pyproject.toml
