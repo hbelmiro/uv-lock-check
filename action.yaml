@@ -72,5 +72,5 @@ runs:
       shell: bash
       working-directory: ${{ env.PYPROJECT_DIR }}
       env:
-        REQUIREMENTS_COMMAND: ${{ inputs.requirements-command }}
+        SYNC_COMMAND: ${{ inputs.requirements-command }}
       run: $GITHUB_ACTION_PATH/verify.sh

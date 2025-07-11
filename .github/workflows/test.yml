@@ -79,7 +79,7 @@ jobs:
         uses: ./
         with:
           pyproject-path: test-project/pyproject.toml
-          requirements-path: requirements.txt
+          requirements-path: test-project/requirements.txt
           requirements-command: uv pip compile pyproject.toml -o requirements.txt
 
   test-custom-requirements:
@@ -117,83 +117,33 @@ jobs:
         uses: ./
         with:
           pyproject-path: test-project/pyproject.toml
-          requirements-path: requirements-linux.txt
+          requirements-path: test-project/requirements-linux.txt
           requirements-command: uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt
 
   test-requirements-failure:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup test project
-        run: |
-          mkdir -p test-project
-          cat > test-project/pyproject.toml << EOF
-          [project]
-          name = "test-project"
-          version = "0.1.0"
-          requires-python = ">=3.9"
-          dependencies = [
-              "requests>=2.31.0",
-              "pytest>=7.4.0",
-          ]
-          EOF
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           export PATH="$HOME/.local/bin:$PATH"
-      - name: Generate requirements.txt
-        working-directory: test-project
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          uv pip compile pyproject.toml -o requirements.txt
-      - name: Modify pyproject.toml
-        run: |
-          sed -i 's/pytest>=7.4.0/pytest>=7.5.0/' test-project/pyproject.toml
-      - uses: ./
+      - name: Run action (should fail)
+        id: action_step
+        continue-on-error: true
+        uses: ./
         with:
-          pyproject-path: test-project/pyproject.toml
-          requirements-path: requirements.txt
-          requirements-command: uv pip compile pyproject.toml -o requirements.txt
-
-  test-uv-lock-failure:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup test project
+          pyproject-path: ./test-fixtures/requirements-out-of-sync/pyproject.toml
+          requirements-path: ./test-fixtures/requirements-out-of-sync/requirements.txt
+          requirements-command: uv sync --directory ./test-fixtures/requirements-out-of-sync
+      - name: Assert action failed
         run: |
-          mkdir -p test-project
-          cat > test-project/pyproject.toml << EOF
-          [project]
-          name = "test-project"
-          version = "0.1.0"
-          requires-python = ">=3.9"
-          dependencies = [
-              "requests>=2.31.0",
-              "pytest>=7.4.0",
-          ]
-          EOF
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
-      - name: Generate uv.lock
-        working-directory: test-project
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          uv sync
-      - name: Modify pyproject.toml
-        run: |
-          sed -i 's/pytest>=7.4.0/pytest>=7.5.0/' test-project/pyproject.toml
-      - name: Update uv.lock
-        working-directory: test-project
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          uv sync
-      - uses: ./
-        with:
-          pyproject-path: test-project/pyproject.toml
-          requirements-path: requirements.txt
-          requirements-command: uv pip compile pyproject.toml -o requirements.txt -- --platform linux 
+          if [[ "${{ steps.action_step.outcome }}" == "success" ]]; then
+            echo "Expected action to fail, but it succeeded!"
+            exit 1
+          else
+            echo "Action failed as expected."
+          fi
 
   test-multiple-requirements:
     runs-on: ubuntu-latest
@@ -237,10 +187,35 @@ jobs:
         with:
           pyproject-path: test-project/pyproject.toml
           requirements-command: uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt
-          requirements-path: requirements-linux.txt
+          requirements-path: test-project/requirements-linux.txt
       - name: Check Windows Requirements
         uses: ./
         with:
           pyproject-path: test-project/pyproject.toml
           requirements-command: uv pip compile --python-platform=windows pyproject.toml -o requirements-win.txt
-          requirements-path: requirements-win.txt 
+          requirements-path: test-project/requirements-win.txt 
+
+  test-failure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+      - name: Run action (should fail)
+        id: action_step
+        continue-on-error: true
+        uses: ./
+        with:
+          pyproject-path: ./test-fixtures/uv-lock-out-of-sync/pyproject.toml
+          requirements-path: ./test-fixtures/uv-lock-out-of-sync/requirements.txt
+          requirements-command: uv sync --directory ./test-fixtures/uv-lock-out-of-sync
+      - name: Assert action failed
+        run: |
+          if [[ "${{ steps.action_step.outcome }}" == "success" ]]; then
+            echo "Expected action to fail, but it succeeded!"
+            exit 1
+          else
+            echo "Action failed as expected."
+          fi
