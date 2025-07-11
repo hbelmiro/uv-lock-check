@@ -26,16 +26,10 @@ jobs:
               "pytest>=7.4.0",
           ]
           EOF
-      
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
-      
+
       - name: Generate lock file
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv sync
       
       - name: Test basic usage (with default uv sync command)
@@ -62,17 +56,11 @@ jobs:
           ]
           EOF
       
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
-      
       - name: Generate lock file
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv sync
-      
+
       - name: Test with default uv sync command (no requirements-command specified)
         uses: ./
         with:
@@ -82,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Create test project
         run: |
           mkdir -p test-project
@@ -96,17 +84,10 @@ jobs:
               "pytest>=7.4.0",
           ]
           EOF
-      
-      - name: Install uv
-        working-directory: test-project
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
 
       - name: Generate lock and requirements files
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv sync
           uv pip compile pyproject.toml -o requirements.txt
       
@@ -135,16 +116,10 @@ jobs:
               "pytest>=7.4.0",
           ]
           EOF
-      
-      - name: Install uv
-        working-directory: test-project
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+
       - name: Generate lock and platform-specific requirements
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv sync
           uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt
       
@@ -159,10 +134,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
       - name: Run action (should fail)
         id: action_step
         continue-on-error: true
@@ -197,25 +168,17 @@ jobs:
               "pytest>=7.4.0",
           ]
           EOF
-      - name: Install uv
-        working-directory: test-project
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
       - name: Print uv version
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv --version
       - name: Generate requirements-linux.txt
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt
       - name: Generate requirements-win.txt
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv pip compile --python-platform=windows pyproject.toml -o requirements-win.txt
       - name: Check Linux Requirements
         uses: ./
@@ -234,10 +197,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
       - name: Run action (should fail)
         id: action_step
         continue-on-error: true

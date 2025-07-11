@@ -52,11 +52,10 @@ runs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install uv
-      shell: bash
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
 
     - name: Run uv sync
       if: inputs.run-sync == 'true'
