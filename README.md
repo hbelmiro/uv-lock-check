@@ -41,22 +41,22 @@ jobs:
     requirements-path: 'path/to/requirements.txt'
 ```
 
-### With Custom Requirements Command
+### With Custom Command
 
 ```yaml
 - uses: hbelmiro/uv-lock-check@v1
   with:
-    requirements-command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
+    command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
     requirements-path: 'requirements-linux.txt'
 ```
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `pyproject-path` | Path to the pyproject.toml file | No | `pyproject.toml` |
-| `requirements-path` | Path to the requirements.txt file. If empty, will look for requirements.txt in the same directory as pyproject.toml | No | `''` |
-| `requirements-command` | Complete uv command to generate requirements.txt | No | `uv sync` |
+| Input               | Description                                                                                                         | Required | Default          |
+|---------------------|---------------------------------------------------------------------------------------------------------------------|----------|------------------|
+| `pyproject-path`    | Path to the pyproject.toml file                                                                                     | No       | `pyproject.toml` |
+| `requirements-path` | Path to the requirements.txt file. If empty, will look for requirements.txt in the same directory as pyproject.toml | No       | `''`             |
+| `command`           | uv command to run for validation                                                                                    | No       | `uv sync`        |
 
 ## How It Works
 
@@ -74,7 +74,7 @@ jobs:
 ```yaml
 - uses: hbelmiro/uv-lock-check@v1
   with:
-    requirements-command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
+    command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
     requirements-path: 'requirements-linux.txt'
 ```
 
@@ -84,13 +84,13 @@ jobs:
 - name: Check Linux Requirements
   uses: hbelmiro/uv-lock-check@v1
   with:
-    requirements-command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
+    command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
     requirements-path: 'requirements-linux.txt'
 
 - name: Check Windows Requirements
   uses: hbelmiro/uv-lock-check@v1
   with:
-    requirements-command: 'uv pip compile --python-platform=windows pyproject.toml -o requirements-win.txt'
+    command: 'uv pip compile --python-platform=windows pyproject.toml -o requirements-win.txt'
     requirements-path: 'requirements-win.txt'
 ```
 
