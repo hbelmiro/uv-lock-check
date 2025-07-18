@@ -32,7 +32,7 @@ runs:
           echo "Error: pyproject.toml not found at ${{ inputs.pyproject-path }}"
           exit 1
         fi
-        PYTHON_VERSION=$(grep -m 1 'requires-python' "${{ inputs.pyproject-path }}" | sed -E 's/.*>=([0-9]+\.[0-9]+).*/\1/')
+        PYTHON_VERSION=$(grep -m 1 'requires-python' "${{ inputs.pyproject-path }}" | grep -oE '[0-9]+\.[0-9]+')
         if [ -z "$PYTHON_VERSION" ]; then
           echo "Error: Could not find Python version in ${{ inputs.pyproject-path }}"
           exit 1

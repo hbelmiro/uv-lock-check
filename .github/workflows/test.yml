@@ -170,7 +170,7 @@ jobs:
         with:
           pyproject-path: ./test-fixtures/requirements-out-of-sync/pyproject.toml
           requirements-path: ./test-fixtures/requirements-out-of-sync/requirements.txt
-          requirements-command: uv sync --directory ./test-fixtures/requirements-out-of-sync
+          requirements-command: uv pip compile ./test-fixtures/requirements-out-of-sync/pyproject.toml -o ./test-fixtures/requirements-out-of-sync/requirements.txt
       - name: Assert action failed
         run: |
           if [[ "${{ steps.action_step.outcome }}" == "success" ]]; then
@@ -245,7 +245,7 @@ jobs:
         with:
           pyproject-path: ./test-fixtures/uv-lock-out-of-sync/pyproject.toml
           requirements-path: ./test-fixtures/uv-lock-out-of-sync/requirements.txt
-          requirements-command: uv sync --directory ./test-fixtures/uv-lock-out-of-sync
+          requirements-command: uv pip compile ./test-fixtures/uv-lock-out-of-sync/pyproject.toml -o ./test-fixtures/uv-lock-out-of-sync/requirements.txt
       - name: Assert action failed
         run: |
           if [[ "${{ steps.action_step.outcome }}" == "success" ]]; then
@@ -254,3 +254,23 @@ jobs:
           else
             echo "Action failed as expected."
           fi
+
+  test-python-version-tilde:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+      - name: Debug - List test-fixtures/python-version-tilde
+        run: |
+          pwd
+          ls -l ./test-fixtures/python-version-tilde
+          cat ./test-fixtures/python-version-tilde/pyproject.toml
+      - name: Run action
+        id: action_step
+        uses: ./
+        with:
+          pyproject-path: ./test-fixtures/python-version-tilde/pyproject.toml
+          requirements-command: uv sync --directory ./test-fixtures/python-version-tilde
