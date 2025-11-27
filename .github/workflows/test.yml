@@ -11,7 +11,7 @@ jobs:
   test-basic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Create test project
         run: |
@@ -46,7 +46,7 @@ jobs:
   test-default-sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Create test project
         run: |
@@ -81,7 +81,7 @@ jobs:
   test-requirements:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Create test project
         run: |
@@ -120,7 +120,7 @@ jobs:
   test-custom-requirements:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Create test project
         run: |
@@ -158,7 +158,7 @@ jobs:
   test-requirements-failure:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -183,7 +183,7 @@ jobs:
   test-multiple-requirements:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Create test project
         run: |
           mkdir -p test-project
@@ -233,7 +233,7 @@ jobs:
   test-failure:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -258,7 +258,7 @@ jobs:
   test-python-version-tilde:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
