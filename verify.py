@@ -3,12 +3,12 @@ from __future__ import annotations
 
 import argparse
 import os
-import re
 import shlex
 import subprocess
+from typing import Optional
 
 
-def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+def _parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Verify that lock/requirements files are in sync.",
     )
@@ -28,25 +28,43 @@ def _get_repo_root() -> str:
             check=True,
         )
         return result.stdout.strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        # Fallback to current directory if git is not available
+    except subprocess.CalledProcessError:
+        # Fallback to current directory if not in a git repository
         return os.getcwd()
 
 
 def _resolve_directory_in_command(command: str, repo_root: str) -> str:
-    match = re.search(r"--directory[= ]([^ ]+)", command)
-    if not match:
+    try:
+        args = shlex.split(command)
+    except ValueError:
+        # If we can't parse the command, return it unchanged
         return command
-    dir_arg = match.group(1)
-    if os.path.isabs(dir_arg):
-        return command
-    abs_dir = os.path.normpath(os.path.join(repo_root, dir_arg))
-    command = command.replace(f"--directory {dir_arg}", f"--directory {abs_dir}")
-    command = command.replace(f"--directory={dir_arg}", f"--directory={abs_dir}")
-    return command
+
+    modified = False
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--directory" and i + 1 < len(args):
+            # Handle "--directory value" case
+            dir_value = args[i + 1]
+            if not os.path.isabs(dir_value):
+                args[i + 1] = os.path.normpath(os.path.join(repo_root, dir_value))
+                modified = True
+            i += 2
+        elif arg.startswith("--directory="):
+            # Handle "--directory=value" case
+            dir_value = arg[12:]  # Remove "--directory="
+            if not os.path.isabs(dir_value):
+                args[i] = f"--directory={os.path.normpath(os.path.join(repo_root, dir_value))}"
+                modified = True
+            i += 1
+        else:
+            i += 1
+
+    return shlex.join(args) if modified else command
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     args = _parse_args(argv)
     command = _resolve_directory_in_command(args.command, _get_repo_root())
 
@@ -59,6 +77,9 @@ def main(argv: list[str] | None = None) -> int:
             return 1
     except ValueError:
         print(f"❌ Invalid command format: {command}")
+        return 1
+    except FileNotFoundError:
+        print(f"❌ Command not found: {command}")
         return 1
 
     diff = subprocess.run(["git", "diff", "--exit-code", "--quiet"])
