@@ -1,0 +1,42 @@
+[project]
+name = "uv-lock-check"
+version = "0.3.0"
+description = "Validates if the uv.lock file and optionally requirements.txt files were generated from the current pyproject.toml file"
+readme = "README.md"
+requires-python = ">=3.14"
+
+[dependency-groups]
+lint = [
+  "ruff==0.15.12",
+  "ty==0.0.35",
+]
+test = [
+  "pytest",
+  "pytest-cov",
+]
+ci = [
+  { include-group = "lint" },
+  { include-group = "test" },
+  "pre-commit",
+]
+dev = [
+  { include-group = "ci" },
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["."]
+omit = ["tests/*", ".venv/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+show_missing = true
+
+[tool.ruff]
+target-version = "py314"

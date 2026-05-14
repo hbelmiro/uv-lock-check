@@ -1,0 +1,138 @@
+name: Test Action
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-basic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      
+      - name: Create test project
+        run: |
+          mkdir -p test-project
+          cat > test-project/pyproject.toml << EOF
+          [project]
+          name = "test-project"
+          version = "0.1.0"
+          requires-python = ">=3.9"
+          dependencies = [
+              "requests>=2.31.0",
+              "pytest>=7.4.0",
+          ]
+          EOF
+      
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+      
+      - name: Generate lock file
+        working-directory: test-project
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv sync
+      
+      - name: Test basic usage (with default uv sync command)
+        uses: ./
+        with:
+          pyproject-path: test-project/pyproject.toml
+
+  test-default-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      
+      - name: Create test project
+        run: |
+          mkdir -p test-project
+          cat > test-project/pyproject.toml << EOF
+          [project]
+          name = "test-project"
+          version = "0.1.0"
+          requires-python = ">=3.9"
+          dependencies = [
+              "requests>=2.31.0",
+              "pytest>=7.4.0",
+          ]
+          EOF
+      
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+      
+      - name: Generate lock file
+        working-directory: test-project
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv sync
+      
+      - name: Test with default uv sync command (no command specified)
+        uses: ./
+        with:
+          pyproject-path: test-project/pyproject.toml
+
+  test-requirements:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      
+      - name: Create test project
+        run: |
+          mkdir -p test-project
+          cat > test-project/pyproject.toml << EOF
+          [project]
+          name = "test-project"
+          version = "0.1.0"
+          requires-python = ">=3.9"
+          dependencies = [
+              "requests>=2.31.0",
+              "pytest>=7.4.0",
+          ]
+          EOF
+      
+      - name: Install uv
+        working-directory: test-project
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+
+      - name: Generate lock and requirements files
+        working-directory: test-project
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv sync
+          uv pip compile pyproject.toml -o requirements.txt
+      
+      - name: Test with requirements
+        uses: ./
+        with:
+          pyproject-path: test-project/pyproject.toml
+          requirements-path: test-project/requirements.txt
+          command: uv pip compile pyproject.toml -o requirements.txt
+
+  test-python-version-tilde:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+      - name: Debug - List test-fixtures/python-version-tilde
+        run: |
+          pwd
+          ls -l ./test-fixtures/python-version-tilde
+          cat ./test-fixtures/python-version-tilde/pyproject.toml
+      - name: Run action
+        id: action_step
+        uses: ./
+        with:
+          pyproject-path: ./test-fixtures/python-version-tilde/pyproject.toml
+          command: uv sync --directory ./test-fixtures/python-version-tilde

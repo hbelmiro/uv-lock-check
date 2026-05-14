@@ -1,6 +1,7 @@
 # uv-lock-check
 
-A GitHub Action that validates if your `uv.lock` file and optionally `requirements.txt` files are in sync with your `pyproject.toml` file.
+A GitHub Action that validates if your `uv.lock` file and optionally
+`requirements.txt` files are in sync with your `pyproject.toml` file.
 
 ## Features
 
@@ -61,7 +62,8 @@ jobs:
 ## How It Works
 
 1. The action reads the Python version from your `pyproject.toml` file
-2. It runs the specified command (defaults to `uv sync`) to check if the `uv.lock` file is in sync
+2. It runs the specified command (defaults to `uv sync`) to check
+   if the `uv.lock` file is in sync
 3. If a `requirements.txt` file is specified:
    - It generates a new requirements file using the provided command
    - Compares it with the existing one
@@ -96,46 +98,39 @@ jobs:
 
 ## Development
 
+### Setup
+
+```bash
+uv sync --group dev
+```
+
 ### Testing
 
-The action includes a test workflow that verifies different scenarios:
+Run unit tests:
 
-- Basic usage (just uv.lock)
-- With requirements.txt
-- With custom requirements command
-- Failure cases
-
-To run the tests locally:
-
-1. Create a test project:
 ```bash
-mkdir test-project
-cd test-project
+uv run pytest -v
 ```
 
-2. Create a pyproject.toml:
-```toml
-[project]
-name = "test-project"
-version = "0.1.0"
-requires-python = ">=3.9"
-dependencies = [
-    "requests>=2.31.0",
-    "pytest>=7.4.0",
-]
+Run with coverage:
+
+```bash
+uv run pytest --cov --cov-report=term-missing
 ```
 
-3. Generate the lock file:
+### Linting and type checking
+
 ```bash
-uv sync
+uv run ruff check .
+uv run ty check
 ```
 
-4. Run the action:
+### Pre-commit hooks
+
 ```bash
-# From the action's root directory
-./verify.sh
+uv run pre-commit run --all-files
 ```
 
 ## License
 
-Apache License 2.0 - see [LICENSE](LICENSE) for details 
+Apache License 2.0 - see [LICENSE](LICENSE) for details
