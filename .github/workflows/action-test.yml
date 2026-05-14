@@ -28,15 +28,11 @@ jobs:
           EOF
       
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
       
       - name: Generate lock file
         working-directory: test-project
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          uv sync
+        run: uv sync
       
       - name: Test basic usage (with default uv sync command)
         uses: ./
@@ -63,15 +59,11 @@ jobs:
           EOF
       
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
       
       - name: Generate lock file
         working-directory: test-project
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          uv sync
+        run: uv sync
       
       - name: Test with default uv sync command (no command specified)
         uses: ./
@@ -98,15 +90,11 @@ jobs:
           EOF
       
       - name: Install uv
-        working-directory: test-project
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
       - name: Generate lock and requirements files
         working-directory: test-project
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           uv sync
           uv pip compile pyproject.toml -o requirements.txt
       
@@ -122,9 +110,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
       - name: Debug - List test-fixtures/python-version-tilde
         run: |
           pwd

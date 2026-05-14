@@ -73,4 +73,4 @@ runs:
       working-directory: ${{ env.PYPROJECT_DIR }}
       env:
         COMMAND: ${{ inputs.command }}
-      run: python $GITHUB_ACTION_PATH/verify.py --command "$COMMAND"
+      run: python "$GITHUB_ACTION_PATH/verify.py" --command "$COMMAND"

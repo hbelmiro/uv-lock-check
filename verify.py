@@ -28,7 +28,7 @@ def _get_repo_root() -> str:
             check=True,
         )
         return result.stdout.strip()
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         # Fallback to current directory if git is not available
         return os.getcwd()
 
@@ -38,9 +38,9 @@ def _resolve_directory_in_command(command: str, repo_root: str) -> str:
     if not match:
         return command
     dir_arg = match.group(1)
-    if dir_arg.startswith("/"):
+    if os.path.isabs(dir_arg):
         return command
-    abs_dir = f"{repo_root}/{dir_arg}"
+    abs_dir = os.path.normpath(os.path.join(repo_root, dir_arg))
     command = command.replace(f"--directory {dir_arg}", f"--directory {abs_dir}")
     command = command.replace(f"--directory={dir_arg}", f"--directory={abs_dir}")
     return command
