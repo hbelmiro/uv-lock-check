@@ -21,6 +21,14 @@ inputs:
     description: 'Whether to run uv sync to update uv.lock and requirements.txt'
     required: false
     default: 'false'
+  show-diff:
+    description: 'Show git diff output when files are out of sync'
+    required: false
+    default: 'false'
+  diff-max-lines:
+    description: 'Maximum number of diff lines to display when show-diff is enabled'
+    required: false
+    default: '200'
 
 runs:
   using: "composite"
@@ -73,4 +81,11 @@ runs:
       working-directory: ${{ env.PYPROJECT_DIR }}
       env:
         COMMAND: ${{ inputs.command }}
-      run: python "$GITHUB_ACTION_PATH/verify.py" --command "$COMMAND"
+        SHOW_DIFF: ${{ inputs.show-diff }}
+        DIFF_MAX_LINES: ${{ inputs.diff-max-lines }}
+      run: |
+        SHOW_DIFF_FLAG=""
+        if [ "$SHOW_DIFF" = "true" ]; then
+          SHOW_DIFF_FLAG="--show-diff"
+        fi
+        python "$GITHUB_ACTION_PATH/verify.py" --command "$COMMAND" $SHOW_DIFF_FLAG --diff-max-lines "$DIFF_MAX_LINES"

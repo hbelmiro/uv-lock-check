@@ -8,11 +8,31 @@ import subprocess
 from typing import Optional
 
 
+def _positive_int(value: str) -> int:
+    n = int(value)
+    if n < 1:
+        msg = f"{value} is not a positive integer"
+        raise argparse.ArgumentTypeError(msg)
+    return n
+
+
 def _parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Verify that lock/requirements files are in sync.",
     )
     parser.add_argument("--command", required=True, help="The uv command to run.")
+    parser.add_argument(
+        "--show-diff",
+        action="store_true",
+        default=False,
+        help="Show git diff output when files are out of sync.",
+    )
+    parser.add_argument(
+        "--diff-max-lines",
+        type=_positive_int,
+        default=200,
+        help="Maximum number of diff lines to display (default: 200).",
+    )
     return parser.parse_args(argv)
 
 
@@ -95,6 +115,28 @@ def main(argv: Optional[list[str]] = None) -> int:
             print(names.stdout)
         except subprocess.CalledProcessError:
             print("❌ Existing files have been modified by sync (unable to list files)")
+        if args.show_diff:
+            try:
+                diff_result = subprocess.run(
+                    ["git", "diff"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                diff_lines = diff_result.stdout.splitlines()
+                total = len(diff_lines)
+                if total > args.diff_max_lines:
+                    print("\n".join(diff_lines[: args.diff_max_lines]))
+                    omitted = total - args.diff_max_lines
+                    noun = "line" if omitted == 1 else "lines"
+                    print(
+                        f"... ({omitted} more {noun} omitted,"
+                        f" showing {args.diff_max_lines}/{total})"
+                    )
+                else:
+                    print(diff_result.stdout, end="")
+            except subprocess.CalledProcessError:
+                print("(unable to retrieve diff content)")
         print("This indicates that your lock files or requirements files are out of sync.")
         print("Please run the sync command and commit the changes.")
         return 1

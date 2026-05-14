@@ -58,6 +58,8 @@ jobs:
 | `pyproject-path`    | Path to the pyproject.toml file                                                                                     | No       | `pyproject.toml` |
 | `requirements-path` | Path to the requirements.txt file. If empty, will look for requirements.txt in the same directory as pyproject.toml | No       | `''`             |
 | `command`           | uv command to run for validation                                                                                    | No       | `uv sync`        |
+| `show-diff`         | Show git diff output when files are out of sync                                                                     | No       | `false`          |
+| `diff-max-lines`    | Maximum number of diff lines to display when `show-diff` is enabled                                                 | No       | `200`            |
 
 ## How It Works
 
@@ -78,6 +80,15 @@ jobs:
   with:
     command: 'uv pip compile --python-platform=linux pyproject.toml -o requirements-linux.txt'
     requirements-path: 'requirements-linux.txt'
+```
+
+### With Diff Output on Failure
+
+```yaml
+- uses: hbelmiro/uv-lock-check@v1
+  with:
+    show-diff: 'true'
+    diff-max-lines: '500'
 ```
 
 ### Multiple Requirements Files
