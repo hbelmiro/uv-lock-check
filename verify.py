@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
 import os
 import shlex
 import subprocess
-from typing import Optional
 
 
 def _positive_int(value: str) -> int:
@@ -16,7 +14,7 @@ def _positive_int(value: str) -> int:
     return n
 
 
-def _parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Verify that lock/requirements files are in sync.",
     )
@@ -84,7 +82,7 @@ def _resolve_directory_in_command(command: str, repo_root: str) -> str:
     return shlex.join(args) if modified else command
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     command = _resolve_directory_in_command(args.command, _get_repo_root())
 
@@ -92,7 +90,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     print(f"Running command: {command}")
 
     try:
-        result = subprocess.run(shlex.split(command))
+        result = subprocess.run(shlex.split(command), check=False)
         if result.returncode != 0:
             return 1
     except ValueError:
@@ -102,7 +100,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(f"❌ Command not found: {command}")
         return 1
 
-    diff = subprocess.run(["git", "diff", "--exit-code", "--quiet"])
+    diff = subprocess.run(["git", "diff", "--exit-code", "--quiet"], check=False)
     if diff.returncode != 0:
         try:
             names = subprocess.run(
