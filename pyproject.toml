@@ -8,7 +8,7 @@ requires-python = ">=3.14"
 [dependency-groups]
 lint = [
   "ruff==0.17.0",
-  "ty==0.0.84",
+  "ty==0.0.86",
 ]
 test = [
   "pytest",
