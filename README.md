@@ -71,6 +71,10 @@ jobs:
    - Compares it with the existing one
    - Fails if they don't match
 
+A successful run means the command exited 0 and regenerating the files
+produced no diff. It is not an independent proof that every locked
+version satisfies its declared specifiers — that validation is uv's job.
+
 ## Examples
 
 ### Platform-Specific Requirements
