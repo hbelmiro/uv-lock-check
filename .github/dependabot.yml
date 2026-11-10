@@ -1,12 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
+    milestone: 3
     directory: "/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 5
 
   - package-ecosystem: "uv"
+    milestone: 3
     directory: "/"
     schedule:
       interval: "weekly"
